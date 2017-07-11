@@ -40,6 +40,21 @@ subparsers:
                           Check floating ip connectivity during upgrade.
                           Note: This requires a running instance with attached floating ip and allowed icmp traffic.
                       default: false
+                  upgrade-workload:
+                      type: Bool
+                      help: |
+                          Launch workload before starting upgrade
+                      default: false
+                  upgrade-workloadimage:
+                      type: Value
+                      help: |
+                          Image URL to be used for spawning instance before upgrade.
+                      default: http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img
+                  upgrade-workloadmemory:
+                      type: Value
+                      help: |
+                          Memory assigned to the instance spawned before upgrade
+                      default: 512
             - title: TripleO Update
               options:
                   overcloud-update:

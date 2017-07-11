@@ -36,6 +36,12 @@
 - include: undercloud_ssl_camap.yaml
   when: undercloud_ssl|succeeded
 
+- name: create workload launch script
+  template:
+    src: "{{ workload_launch_template }}"
+    dest: "{{ workload_launch_script }}"
+    mode: 0775
+
 - name: create undercloud upgrade script
   template:
     src: "{{ undercloud_upgrade_template }}"

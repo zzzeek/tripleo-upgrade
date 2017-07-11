@@ -22,10 +22,17 @@ use_oooq: false
 undercloud_rc: "{{ working_dir }}/stackrc"
 overcloud_rc: "{{ working_dir }}/overcloudrc"
 
+# launch workload before update/upgrade
+workload_launch: false
+external_network_name: "public"
+workload_image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+workload_memory: "512"
+
 # upgrade jinja template name:
 undercloud_upgrade_template: undercloud_upgrade.sh.j2
 container_images_download_template: download_images.sh.j2
 local_docker_registry_env_template: create_registry_env.sh.j2
+workload_launch_template: workload_launch.sh.j2
 
 # upgrade scripts name:
 undercloud_upgrade_script: "{{ working_dir }}/undercloud_upgrade.sh"
@@ -34,6 +41,7 @@ overcloud_composable_upgrade_script: "{{ working_dir }}/composable_docker_upgrad
 overcloud_converge_upgrade_script: "{{ working_dir }}/converge_docker_upgrade.sh"
 container_images_download_script: "{{ working_dir }}/container_images_download.sh"
 local_docker_registry_env_script: "{{ working_dir }}/local_docker_registry_env.sh"
+workload_launch_script: "{{ working_dir }}/workload_launch.sh"
 
 # enable local docker registry
 use_local_docker_registry: true

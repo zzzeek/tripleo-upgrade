@@ -67,6 +67,23 @@ Allows the user to apply known issues workarounds during the upgrade process. Th
 
 Set to true when the deployment has been done by tripleo quickstart.
 
+    workload_launch: false
+
+Set to true to launch an instance before starting upgrade. This can be useful for running tests during upgrade such as live migration or floating IP connectivity checks.
+
+    external_network_name: "public"
+
+Name of the external network providing floating IPs for instance connectivity. This provides external connectivity and needs to exist beforehand, created by the user.
+
+    workload_image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+
+URL of the image used for the workload instance.
+
+    workload_memory: "512"
+
+Amount of memory assigned for the workload instance.
+
+
 Dependencies
 ------------
 

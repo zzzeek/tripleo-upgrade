@@ -9,6 +9,21 @@
 
   pre_tasks:
 
+    - name: Set upgrade workload launch
+      set_fact:
+         workload_launch: true
+      when: install.upgrade.workload
+
+    - name: Set upgrade workload image
+      set_fact:
+         workload_image_url: "{{ install.upgrade.workloadimage }}"
+      when: install.upgrade.workload
+
+    - name: Set upgrade workload memory
+      set_fact:
+         workload_memory: "{{ install.upgrade.workloadmemory }}"
+      when: install.upgrade.workload
+
     - name: Set undercloud upgrade
       set_fact:
          undercloud_upgrade: true

@@ -4,6 +4,10 @@
   include: create-scripts.yaml
   tags: create_upgrade_scripts
 
+- name: launch pre upgrade workload
+  command: "{{ workload_launch_script }}"
+  when: workload_launch
+
 - block:
     - name: apply pre undercloud upgrade workarounds
       command: "{{working_dir}}/pre_undercloud_upgrade_workarounds.sh"
