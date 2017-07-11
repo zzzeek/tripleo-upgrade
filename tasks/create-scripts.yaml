@@ -56,6 +56,19 @@
      - 'post_docker_converge_upgrade_workarounds'
   when: upgrade_workarounds
 
+- block:
+    - name: create start l3 agent connectivity check scripts
+      template:
+        src: "{{ l3_agent_connectivity_check_start_template }}"
+        dest: "{{ l3_agent_connectivity_check_start_script }}"
+        mode: 0775
+
+    - name: create stop l3 agent connectivity check scripts
+      template:
+        src: "{{ l3_agent_connectivity_check_stop_template }}"
+        dest: "{{ l3_agent_connectivity_check_stop_script }}"
+        mode: 0775
+
 - name: create container images download script
   template:
     src: "{{ container_images_download_template }}"

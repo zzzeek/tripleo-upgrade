@@ -44,5 +44,10 @@
         overcloud_update: true
       when: install.overcloud.get('update', {})
 
+    - name: Set upgrade floating ip check
+      set_fact:
+         l3_agent_connectivity_check: true
+      when: install.upgrade.floatingip.check
+
   roles:
     - tripleo-upgrade

@@ -34,6 +34,12 @@ subparsers:
                       help: |
                           Reboot undercloud post upgrade when ovs or kernel get upgraded
                       default: false
+                  upgrade-floatingip-check:
+                      type: Bool
+                      help: |
+                          Check floating ip connectivity during upgrade.
+                          Note: This requires a running instance with attached floating ip and allowed icmp traffic.
+                      default: false
             - title: TripleO Update
               options:
                   overcloud-update:
