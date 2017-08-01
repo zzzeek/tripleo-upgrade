@@ -1,4 +1,9 @@
 ---
+- name: create a comptatible deployment scripts from oooq
+  include: use_oooq.yaml
+  tags: use_oooq
+  when: use_oooq|bool
+
 - name: create undercloud upgrade script
   template:
     src: "{{ undercloud_upgrade_template }}"

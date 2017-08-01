@@ -63,6 +63,10 @@ Location of the overcloud credentials file.
 
 Allows the user to apply known issues workarounds during the upgrade process. The list of patches/commands used for workarounds should be passed via --extra-vars and it should include dictionaries for undercloud/overcloud workarounds.
 
+    use_oooq: false
+
+Set to true when the deployment has been done by tripleo quickstart.
+
 Dependencies
 ------------
 
@@ -83,6 +87,48 @@ An example playbook is provided in tests/test.yml:
       become_user: stack
       roles:
         - tripleo-upgrade
+
+
+Usage with tripleo Quickstart
+-----------------------------
+
+After a successful deployment with OOOQ, you can create the necessary
+scripts using this example playbook (duplicate from
+./tests/oooq-test.yaml):
+
+    ---
+    - hosts: all
+      gather_facts: true
+
+    - hosts: undercloud
+      vars:
+        - overcloud_deploy_script: overcloud-deploy-command.sh
+      gather_facts: false
+      become: yes
+      become_method: sudo
+      become_user: stack
+      roles:
+      - { role: tripleo-upgrade, use_oooq: 'true'}
+
+
+And then you run it like this (adjust the paths to your oooq specific
+one)
+
+   ANSIBLE_SSH_ARGS="-F $(pwd)/ssh.config.ansible" \
+     ANSIBLE_CONFIG=$PWD/ansible.cfg \
+     ansible-playbook -i hosts -vvv tripleo-upgrade/tests/oooq-test.yaml
+
+This will only create the file (without running the actual upgrade):
+ - undercloud_upgrade.sh
+ - container_images_download.sh
+ - local_docker_registry_env.sh
+ - composable_docker_upgrade.sh
+ - overcloud-compute-*_upgrade_pre.sh
+ - overcloud-compute-*_upgrade.sh
+ - overcloud-compute-*_upgrade_post.sh
+ - converge_docker_upgrade.sh
+
+with the correct parameters.
 
 License
 -------

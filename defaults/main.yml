@@ -3,6 +3,9 @@
 # main vars:
 working_dir: "{{ ansible_env.HOME }}"
 
+# TODO: those variable can be changed for the explicit keyword in tag
+# when https://github.com/ansible/ansible/issues/11045 is merged.
+
 # enable update/upgrade
 undercloud_upgrade: false
 overcloud_upgrade: false
@@ -11,6 +14,9 @@ overcloud_update: false
 
 # enable upgrade workarounds
 upgrade_workarounds: false
+
+# use oooq
+use_oooq: false
 
 #rc files:
 undercloud_rc: "{{ working_dir }}/stackrc"
