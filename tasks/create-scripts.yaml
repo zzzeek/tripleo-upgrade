@@ -51,8 +51,15 @@
       script: "{{ overcloud_converge_upgrade_script }}"
       environment_file:
         - "{{ tht_directory }}/environments/docker.yaml"
-        - "{{ tht_directory }}/major-upgrade-converge-docker.yaml"
+        - "{{ tht_directory }}/environments/docker-ha.yaml"
+        - "{{ tht_directory }}/environments/major-upgrade-converge-docker.yaml"
         - "{% if not upstream_container_images or (upstream_container_images and use_local_docker_registry) %}{{ containers_default_parameters }}{% endif %}"
+
+- name: adjust ssh config to skip host key check
+  copy:
+    src: ssh_config
+    dest: "~/.ssh/config"
+    mode: 0600
 
 - name: Nova compute nodes upgrade scripts
   include: node_upgrade_script.yml

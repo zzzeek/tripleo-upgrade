@@ -46,13 +46,15 @@
           loop_var: node_name
       tags: nova_compute_upgrade
 
+# gather facts to avoid failing on expired facts on deployments containing
+# larger number of nodes
+    - setup:
+
     - name: apply pre docker upgrade converge workarounds
       command: "{{working_dir}}/pre_docker_converge_upgrade_workarounds.sh"
       when: upgrade_workarounds
 
-    - name: run docker upgrade converge step
-      shell: "bash {{ overcloud_converge_upgrade_script }}"
-      tags: docker_converge_upgrade
+    - include: docker_converge_upgrade.yml
 
     - name: apply post docker upgrade converge workarounds
       command: "{{working_dir}}/post_docker_converge_upgrade_workarounds.sh"
