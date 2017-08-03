@@ -5,6 +5,10 @@
   tags: create_upgrade_scripts
 
 - block:
+    - name: apply pre undercloud upgrade workarounds
+      command: "{{working_dir}}/pre_undercloud_upgrade_workarounds.sh"
+      when: upgrade_workarounds
+
     - name: upgrade undercloud
       shell: "bash {{ undercloud_upgrade_script }} &> undercloud_upgrade.log"
       tags: undercloud_upgrade
@@ -12,15 +16,11 @@
     - name: validate undercloud upgrade
       include: undercloud_validate_upgrade.yaml
       tags: undercloud_upgrade_validate
-
-    - name: apply undercloud upgrade workarounds
-      shell: "bash ~/upgrade_undercloud_workarounds.sh"
-      when: upgrade_workarounds
   when: undercloud_upgrade or undercloud_update
 
 - block:
-    - name: apply upgrade overcloud upgrade workarounds
-      shell: "bash ~/upgrade_overcloud_workarounds.sh"
+    - name: apply pre docker composable upgrade workarounds
+      command: "{{working_dir}}/pre_docker_composable_upgrade_workarounds.sh"
       when: upgrade_workarounds
 
     # TODO: move this out of upgrade
@@ -35,6 +35,10 @@
     - include: docker_composable_upgrade.yml
       tags: docker_composable_upgrade
 
+    - name: apply pre nova compute upgrade workarounds
+      command: "{{working_dir}}/pre_nova_compute_upgrade_workarounds.sh"
+      when: upgrade_workarounds
+
     - name: upgrade nova compute nodes
       include: node_upgrade.yml
       with_items: "{{ groups.compute|default([]) }}"
@@ -42,7 +46,15 @@
           loop_var: node_name
       tags: nova_compute_upgrade
 
+    - name: apply pre docker upgrade converge workarounds
+      command: "{{working_dir}}/pre_docker_converge_upgrade_workarounds.sh"
+      when: upgrade_workarounds
+
     - name: run docker upgrade converge step
       shell: "bash {{ overcloud_converge_upgrade_script }}"
       tags: docker_converge_upgrade
+
+    - name: apply post docker upgrade converge workarounds
+      command: "{{working_dir}}/post_docker_converge_upgrade_workarounds.sh"
+      when: upgrade_workarounds
   when: overcloud_upgrade
