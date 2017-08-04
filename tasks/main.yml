@@ -10,7 +10,7 @@
       when: upgrade_workarounds
 
     - name: upgrade undercloud
-      shell: "bash {{ undercloud_upgrade_script }} &> undercloud_upgrade.log"
+      shell: "bash {{ undercloud_upgrade_script }} &> {{ working_dir }}/undercloud_upgrade.log"
       tags: undercloud_upgrade
 
     - name: validate undercloud upgrade
