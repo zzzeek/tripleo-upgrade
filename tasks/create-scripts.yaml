@@ -4,6 +4,27 @@
   tags: use_oooq
   when: use_oooq|bool
 
+- name: make a copy of the initial overcloud deploy script
+  copy:
+    remote_src: yes
+    src: "{{ overcloud_deploy_script }}"
+    dest: "{{ overcloud_deploy_script }}.orig"
+
+- name: replace services environment files with services-docker correspondents
+  replace:
+    dest: "{{ overcloud_deploy_script }}"
+    regexp: environments/services/
+    replace: environments/services-docker/
+
+- name: replace storage environment with ceph ansible environment
+  replace:
+    dest: "{{ overcloud_deploy_script }}"
+    regexp: environments/storage-environment.yaml
+    replace: environments/ceph-ansible/ceph-ansible.yaml
+
+- name: Adjust custom roles data file during upgrade
+  include: convert_roles_data.yaml
+
 - name: create undercloud upgrade script
   template:
     src: "{{ undercloud_upgrade_template }}"
