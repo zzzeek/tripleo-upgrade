@@ -1,2 +1,17 @@
 source {{ overcloud_rc }}
-nova host-evacuate-live {{ hostvars[node_name].ansible_fqdn }}
+nova host-evacuate-live {{ node_name }}
+
+timeout_seconds=120
+elapsed_seconds=0
+while true; do
+    INSTANCE_COUNT=$(openstack server list --host {{ node_name }} -f json | jq -r -c '[.[] | select(.Status | contains("ACTIVE") or contains("PAUSED"))] | length')
+    if [ $INSTANCE_COUNT == 0 ]; then
+        break
+    fi
+    sleep 3
+    (( elapsed_seconds += 3 ))
+    if [ $elapsed_seconds -ge $timeout_seconds ]; then
+        echo "FAILURE: Could not quiesce compute node {{ node_name }}"
+    exit 1
+    fi
+done

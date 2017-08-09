@@ -36,6 +36,9 @@
       include: local_docker_registry_env.yaml
       tags: local_docker_registry
 
+# refresh facts to avoid failing on env with large number of nodes
+    - setup:
+
     - include: docker_composable_upgrade.yml
       tags: docker_composable_upgrade
 
@@ -44,11 +47,12 @@
       when: upgrade_workarounds
 
     - name: upgrade nova compute nodes
-      include: node_upgrade.yml
-      with_items: "{{ groups.compute|default([]) }}"
-      loop_control:
-          loop_var: node_name
+      include: compute_upgrade.yml
       tags: nova_compute_upgrade
+
+    - name: upgrade swift storage nodes
+      include: swiftstorage_upgrade.yml
+      tags: swift_storage_upgrade
 
 # gather facts to avoid failing on expired facts on deployments containing
 # larger number of nodes
