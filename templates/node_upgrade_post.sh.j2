@@ -1,4 +1,18 @@
 source {{ overcloud_rc }}
 {% for instance in node_instances.stdout_lines %}
-nova live-migration {{ instance }} {{ hostvars[node_name].ansible_fqdn }}
+nova live-migration {{ instance }} {{ node_name }}
+timeout_seconds=120
+elapsed_seconds=0
+while true; do
+    INSTANCE_HOST=$(openstack server show {{ instance }} -f json | jq -r -c '. | .["OS-EXT-SRV-ATTR:host"]')
+    if [ $INSTANCE_HOST == '{{ node_name }}' ]; then
+        break
+    fi
+    sleep 3
+    (( elapsed_seconds += 3 ))
+    if [ $elapsed_seconds -ge $timeout_seconds ]; then
+        echo "FAILURE: Could not live migrate instance back to {{ node_name }}"
+    exit 1
+    fi
+done
 {% endfor %}
