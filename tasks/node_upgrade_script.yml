@@ -24,4 +24,3 @@
     src: node_upgrade_post.sh.j2
     dest: "{{working_dir}}/{{ node_name | splitext | first }}_upgrade_post.sh"
     mode: 0775
-  when: "'compute' in node_name "
