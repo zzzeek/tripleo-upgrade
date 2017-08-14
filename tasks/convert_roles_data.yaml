@@ -1,0 +1,188 @@
+- name: Register roles data file location if exists
+  shell: "grep '\\-r\\ \\|\\-\\-roles' {{ overcloud_deploy_script }} | awk {'print $2'}"
+  register: custom_roles_file
+  ignore_errors: true
+
+- name: Check if roles data has already been adjusted
+  stat:
+    path: "{{ custom_roles_file.stdout }}.pre_pike_upgrade"
+  register: custom_roles_adjusted
+
+- block:
+    - name: Make a copy of the custom roles data file
+      copy:
+        src: "{{ custom_roles_file.stdout }}"
+        dest: "{{ custom_roles_file.stdout }}.pre_pike_upgrade"
+        remote_src: true
+
+    - name: Assigns new attributes to Controller role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: Controller.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - External\n    - InternalApi\n    - Storage\n    - StorageMgmt\n    - Tenant'
+        - '\1\n  tags:\n    - primary\n    - controller'
+        - '\1\n  description: |\n    Controller role that has all the controler services loaded and handles\n    Database, Messaging and Network functions.'
+
+    - name: Assigns new attributes to Compute role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: Compute.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - InternalApi\n    - Storage\n    - Tenant'
+        - '\1\n  description: |\n    Basic Compute Node role'
+
+    - name: Assigns new attributes to BlockStorage role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: BlockStorage.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - InternalApi\n    - Storage\n    - StorageMgmt'
+        - '\1\n  description: |\n    Cinder Block Storage node role'
+
+    - name: Assigns new attributes to ObjectStorage role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: ObjectStorage.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - InternalApi\n    - Storage\n    - StorageMgmt'
+        - '\1\n  description: |\n    Swift Object Storage node role'
+
+    - name: Assigns new attributes to CephStorage role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: CephStorage.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - Storage\n    - StorageMgmt'
+        - '\1\n  description: |\n    Ceph OSD Storage node role'
+
+    - name: Assigns new attributes to Database role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: Database.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - InternalApi'
+        - '\1\n  description: |\n    Standalone database role with the database being managed via Pacemaker'
+
+    - name: Assigns new attributes to Galera role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: Galera.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - InternalApi'
+        - '\1\n  description: |\n    Standalone database role with the database being managed via Pacemaker'
+
+    - name: Assigns new attributes to Networker role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: Networker.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - InternalApi\n    - Tenant'
+        - '\1\n  description: |\n    Standalone networking role to run Neutron agents'
+
+    - name: Assigns new attributes to Messaging role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: Messaging.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - InternalApi'
+        - '\1\n  description: |\n    Standalone messaging role with RabbitMQ being managed via Pacemaker'
+
+    - name: Clean services removed in Pike
+      lineinfile:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: "{{ item }}"
+        state: absent
+      with_items:
+        - 'OS::TripleO::Services::CeilometerApi'
+        - 'OS::TripleO::Services::CeilometerCollector'
+
+    - name: Add services common to all roles introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- OS::TripleO::Services::Timezone)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n    - OS::TripleO::Services::CertmongerUser'
+        - '\1\n    - OS::TripleO::Services::Docker'
+        - '\1\n    - OS::TripleO::Services::Securetty'
+        - '\1\n    - OS::TripleO::Services::Tuned'
+
+    - name: Add CinderBackendVRTSHyperScale service introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- .*CinderVolume)'
+        replace: '\1\n    - OS::TripleO::Services::CinderBackendVRTSHyperScale'
+
+    - name: Add Clustercheck service introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- OS::TripleO::Services::MySQL$)'
+        replace: '\1\n    - OS::TripleO::Services::Clustercheck'
+
+    - name: Add ExternalSwiftProxy service introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- OS::TripleO::Services::SwiftProxy)'
+        replace: '\1\n    - OS::TripleO::Services::ExternalSwiftProxy'
+
+    - name: Add Iscsid service introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: "{{ item }}"
+        replace: '\1\n    - OS::TripleO::Services::Iscsid'
+      with_items:
+        - '(- .*CinderVolume)'
+        - '(- OS::TripleO::Services::NovaCompute)'
+
+    - name: Add Neutron API services introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- OS::TripleO::Services::NeutronApi)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n    - OS::TripleO::Services::NeutronBgpVpnApi'
+        - '\1\n    - OS::TripleO::Services::NeutronL2gwApi'
+
+    - name: Add Neutron API services introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- OS::TripleO::Services::NeutronApi)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n    - OS::TripleO::Services::NeutronBgpVpnApi'
+        - '\1\n    - OS::TripleO::Services::NeutronL2gwApi'
+        - '\1\n    - OS::TripleO::Services::NeutronL2gwAgent'
+        - '\1\n    - OS::TripleO::Services::NeutronLbaasv2Agent'
+
+    - name: Add Neutron agents introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- .*NeutronOvsAgent)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n    - OS::TripleO::Services::NeutronVppAgent'
+        - '\1\n    - OS::TripleO::Services::NeutronLinuxbridgeAgent'
+        - '\1\n    - OS::TripleO::Services::Vpp'
+
+    - name: Add NovaMigrationTarget service introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- OS::TripleO::Services::NovaCompute)'
+        replace: '\1\n    - OS::TripleO::Services::NovaMigrationTarget'
+
+    - name: Add OVNController service introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- OS::TripleO::Services::OVNDBs)'
+        replace: '\1\n    - OS::TripleO::Services::OVNController'
+  when: custom_roles_file.stdout|length > 0 and not custom_roles_adjusted.stat.exists
