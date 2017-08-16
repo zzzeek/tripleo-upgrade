@@ -4,7 +4,7 @@
 
 - hosts: undercloud
   vars:
-    - overcloud_deploy_script: overcloud-deploy-command.sh
+    - overcloud_deploy_script: "{{ working_dir }}/overcloud-deploy-command.sh"
   gather_facts: false
   become: yes
   become_method: sudo
