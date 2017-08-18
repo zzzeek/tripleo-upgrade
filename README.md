@@ -130,7 +130,6 @@ This will only create the file (without running the actual upgrade):
 
 with the correct parameters.
 
-
 Usage with InfraRed
 -----------------------------
 
@@ -165,6 +164,25 @@ Upgrade overcloud:
 
     infrared tripleo-upgrade \
         --overcloud-upgrade yes
+
+Running the role manually from the undercloud
+---------------------------------------------
+This role can be run manually from the undercloud by doing the following steps:
+
+Note: before starting the upgrade process make sure that both the undercloud
+and overcloud nodes have the repositories with upgraded packages set up
+
+Clone this repository
+    git clone https://github.com/redhat-openstack/tripleo-upgrade.git
+
+Set ansible roles path
+    ANSIBLE_ROLES_PATH=$(pwd)
+
+Create inventory file
+    printf "[undercloud]\nlocalhost  ansible_connection=local" > hosts
+
+Run the playbook including this role
+    ansible-playbook -i hosts tripleo-upgrade/tests/test.yml
 
 License
 -------
