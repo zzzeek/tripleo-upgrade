@@ -17,6 +17,11 @@
          undercloud_upgrade: true
       when: install.undercloud.upgrade
 
+    - name: Set undercloud reboot
+      set_fact:
+         undercloud_reboot: true
+      when: install.undercloud.reboot
+
     - name: Set overcloud upgrade
       set_fact:
          overcloud_upgrade: true

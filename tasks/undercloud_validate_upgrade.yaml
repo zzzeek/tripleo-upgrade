@@ -1,4 +1,24 @@
 ---
+- name: register latest installed kernel version
+  shell: |
+    rpm -qa | grep ^kernel-[0-9] | sort | tail -1 | awk -F 'kernel-' {'print $2'}
+  register: installed_kernel
+
+- name: register loaded kernel
+  command: uname -r
+  register: loaded_kernel
+
+- name: register installed openvswitch package version
+  shell: |
+    rpm --queryformat %{VERSION} -q openvswitch | awk -F "." '{print $1"."$2}'
+  register: installed_ovs
+
+- name: register loaded openvswitch version
+  shell: |
+    ovs-vsctl show | grep ovs_version | awk -F \" {'print $2'} | awk -F "." '{print $1"."$2}'
+  become: true
+  register: loaded_ovs
+
 - name: reboot the undercloud
   shell: "sleep 2 && shutdown -r now"
   async: 1
@@ -6,6 +26,8 @@
   ignore_errors: true
   become: true
   become_user: root
+  when:
+    - undercloud_reboot or (installed_kernel.stdout != loaded_kernel.stdout) or (installed_ovs.stdout != loaded_ovs.stdout)
   tags: undercloud_reboot
 
 - block:
@@ -38,4 +60,6 @@
             delay: 10
         delegate_to: virthost
         when: "'virthost' in groups"
+  when:
+    - undercloud_reboot or (installed_kernel.stdout != loaded_kernel.stdout) or (installed_ovs.stdout != loaded_ovs.stdout)
   tags: undercloud_reboot

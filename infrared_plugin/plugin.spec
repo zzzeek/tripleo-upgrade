@@ -29,6 +29,11 @@ subparsers:
                       help: |
                           Use upstream or downstream container images during upgrade
                       default: false
+                  undercloud-reboot:
+                      type: Bool
+                      help: |
+                          Reboot undercloud post upgrade when ovs or kernel get upgraded
+                      default: false
             - title: TripleO Update
               options:
                   overcloud-update:
