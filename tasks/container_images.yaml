@@ -3,6 +3,7 @@
   shell: sleep 1; pkill -u {{ ansible_ssh_user }} sshd
   async: 3
   poll: 2
+  tags: reload_ssh
 
 - name: download container images
   shell: "bash {{ container_images_download_script }}"
