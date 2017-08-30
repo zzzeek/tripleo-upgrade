@@ -18,6 +18,14 @@
   with_items: "{{ ugstage.environment_file }}"
   when: item|length > 0
 
+- name: Append options to {{ ugstage.step }} script
+  lineinfile:
+      dest: "{{ ugstage.script }}"
+      insertbefore: "{{ deploy_lastline.stdout }}"
+      line: '--{{ item }} \'
+  with_items: "{{ ugstage.option|default('') }}"
+  when: item|length > 0
+
 - name: Change log file name of {{ ugstage.step }} script
   lineinfile:
       dest: "{{ ugstage.script }}"

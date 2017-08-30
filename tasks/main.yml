@@ -42,6 +42,9 @@
     - include: docker_composable_upgrade.yml
       tags: docker_composable_upgrade
 
+    - include: heat_outputs_upgrade.yml
+      tags: heat_outputs_upgrade
+
     - name: apply pre nova compute upgrade workarounds
       command: "{{working_dir}}/pre_nova_compute_upgrade_workarounds.sh"
       when: upgrade_workarounds
