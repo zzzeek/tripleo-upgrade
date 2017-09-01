@@ -25,6 +25,14 @@
 - name: Adjust custom roles data file during upgrade
   include: convert_roles_data.yaml
 
+- name: check if undercloud is ssl enabled
+  command: "grep -Fq OS_AUTH_URL=https {{ undercloud_rc }}"
+  register: undercloud_ssl
+  ignore_errors: true
+
+- include: undercloud_ssl_camap.yaml
+  when: undercloud_ssl|succeeded
+
 - name: create undercloud upgrade script
   template:
     src: "{{ undercloud_upgrade_template }}"
@@ -65,6 +73,7 @@
     - step: "Docker containers composable upgrade"
       script: "{{ overcloud_composable_upgrade_script }}"
       environment_file:
+        - "{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}"
         - "{{ tht_directory }}/environments/docker.yaml"
         - "{{ tht_directory }}/environments/docker-ha.yaml"
         - "{{ tht_directory }}/environments/major-upgrade-composable-steps-docker.yaml"
@@ -72,6 +81,7 @@
     - step: "Setup heat outputs script"
       script: "{{ heat_outputs_upgrade_script }}"
       environment_file:
+        - "{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}"
         - "{{ tht_directory }}/environments/docker.yaml"
         - "{{ tht_directory }}/environments/docker-ha.yaml"
         - "{% if not upstream_container_images or (upstream_container_images and use_local_docker_registry) %}{{ containers_default_parameters }}{% endif %}"
@@ -80,6 +90,7 @@
     - step: "Docker containers converge upgrade"
       script: "{{ overcloud_converge_upgrade_script }}"
       environment_file:
+        - "{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}"
         - "{{ tht_directory }}/environments/docker.yaml"
         - "{{ tht_directory }}/environments/docker-ha.yaml"
         - "{{ tht_directory }}/environments/major-upgrade-converge-docker.yaml"
