@@ -21,6 +21,10 @@
         regexp: '^(- name: Controller.*)'
         replace: "{{ item }}"
       with_items:
+        - '\1\n  deprecated_param_image: "controllerImage"'
+        - '\1\n  deprecated_param_flavor: "OvercloudControlFlavor"'
+        - '\1\n  deprecated_param_extraconfig: "controllerExtraConfig"'
+        - '\1\n  uses_deprecated_params: True'
         - '\1\n  networks:\n    - External\n    - InternalApi\n    - Storage\n    - StorageMgmt\n    - Tenant'
         - '\1\n  tags:\n    - primary\n    - controller'
         - '\1\n  description: |\n    Controller role that has all the controler services loaded and handles\n    Database, Messaging and Network functions.'
@@ -31,6 +35,13 @@
         regexp: '^(- name: Compute.*)'
         replace: "{{ item }}"
       with_items:
+        - '\1\n  deprecated_server_resource_name: "NovaCompute"'
+        - '\1\n  deprecated_param_ips: "NovaComputeIPs"'
+        - '\1\n  deprecated_param_scheduler_hints: "NovaComputeSchedulerHints"'
+        - '\1\n  deprecated_param_metadata: "NovaComputeServerMetadata"'
+        - '\1\n  deprecated_param_extraconfig: "NovaComputeExtraConfig"'
+        - '\1\n  deprecated_param_image: "NovaImage"'
+        - '\1\n  uses_deprecated_params: True'
         - '\1\n  networks:\n    - InternalApi\n    - Storage\n    - Tenant'
         - '\1\n  description: |\n    Basic Compute Node role'
 
@@ -49,6 +60,11 @@
         regexp: '^(- name: ObjectStorage.*)'
         replace: "{{ item }}"
       with_items:
+        - '\1\n  deprecated_param_flavor: "OvercloudSwiftStorageFlavor"'
+        - '\1\n  deprecated_param_image: "SwiftStorageImage"'
+        - '\1\n  deprecated_param_ips: "SwiftStorageIPs"'
+        - '\1\n  deprecated_param_metadata: "SwiftStorageServerMetadata"'
+        - '\1\n  uses_deprecated_params: True'
         - '\1\n  networks:\n    - InternalApi\n    - Storage\n    - StorageMgmt'
         - '\1\n  description: |\n    Swift Object Storage node role'
 
