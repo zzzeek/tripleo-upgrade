@@ -1,11 +1,8 @@
 ---
 # This is file and plugin.spec are required by Infrared project
 
-- hosts: all
-  gather_facts: true
-
 - hosts: undercloud
-  gather_facts: false
+  gather_facts: true
   become: yes
   become_method: sudo
   become_user: stack
