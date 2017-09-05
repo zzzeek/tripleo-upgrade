@@ -1,7 +1,7 @@
 ---
 # defaults file for tripleo-upgrade
 # main vars:
-working_dir: "{{ ansible_env.HOME }}"
+working_dir: "{{ (ansible_env|default({})).HOME|default('/home/stack') }}"
 
 # TODO: those variable can be changed for the explicit keyword in tag
 # when https://github.com/ansible/ansible/issues/11045 is merged.
