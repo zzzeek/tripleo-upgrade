@@ -1,0 +1,31 @@
+- name: register undercloud public endpoint
+  shell: |
+    source {{ undercloud_rc }}
+    openstack catalog list | grep -Po 'https.*13000'
+  register: keystone_endpoint
+
+- name: register first controller ip address
+  shell: |
+    source {{ undercloud_rc }}
+    openstack server list -f json | jq -r -c '.[] | select(.Name | contains("controller","ctrl")) | .Networks' | grep -oP '[0-9.]+' | head -1
+  register: ctrl_ip
+
+- name: test undercloud keystone reachability
+  shell: |
+    ssh -q -o StrictHostKeyChecking=no heat-admin@{{ ctrl_ip.stdout }} curl --silent {{ keystone_endpoint.stdout }}
+  register: uc_keystone_conn
+  ignore_errors: True
+
+- block:
+    - name: register ssl certificate
+      shell: |
+        cat $(grep 13000 /etc/haproxy/haproxy.cfg  | awk {'print $6'})
+      become: true
+      become_user: root
+      register: undercloudcert
+
+    - name: generate camap file
+      template:
+        src: undercloud_ssl_camap.yaml.j2
+        dest: "{{ working_dir }}/undercloud_ssl_camap.yaml"
+  when: uc_keystone_conn|failed
