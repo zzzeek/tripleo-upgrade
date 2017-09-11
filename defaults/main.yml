@@ -34,7 +34,6 @@ overcloud_composable_upgrade_script: "{{ working_dir }}/composable_docker_upgrad
 overcloud_converge_upgrade_script: "{{ working_dir }}/converge_docker_upgrade.sh"
 container_images_download_script: "{{ working_dir }}/container_images_download.sh"
 local_docker_registry_env_script: "{{ working_dir }}/local_docker_registry_env.sh"
-heat_outputs_upgrade_script: "{{ working_dir }}/setup_heat_outputs_upgrade.sh"
 
 # enable local docker registry
 use_local_docker_registry: true
