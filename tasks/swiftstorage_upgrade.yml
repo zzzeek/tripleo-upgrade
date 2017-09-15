@@ -8,4 +8,4 @@
   with_items: "{{ swift_nodes.stdout_lines }}"
   loop_control:
     loop_var: node_name
-  when: overcloud_upgrade
+  when: overcloud_upgrade|bool
