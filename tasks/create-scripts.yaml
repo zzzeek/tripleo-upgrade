@@ -76,7 +76,7 @@
     - step: "Docker containers composable upgrade"
       script: "{{ overcloud_composable_upgrade_script }}"
       environment_file:
-        - "{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}"
+        - "{% if undercloud_ssl|succeeded %}{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}{% endif %}"
         - "{{ tht_directory }}/environments/docker.yaml"
         - "{{ tht_directory }}/environments/docker-ha.yaml"
         - "{{ tht_directory }}/environments/major-upgrade-composable-steps-docker.yaml"
@@ -85,7 +85,7 @@
     - step: "Docker containers converge upgrade"
       script: "{{ overcloud_converge_upgrade_script }}"
       environment_file:
-        - "{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}"
+        - "{% if undercloud_ssl|succeeded %}{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}{% endif %}"
         - "{{ tht_directory }}/environments/docker.yaml"
         - "{{ tht_directory }}/environments/docker-ha.yaml"
         - "{{ tht_directory }}/environments/major-upgrade-converge-docker.yaml"
