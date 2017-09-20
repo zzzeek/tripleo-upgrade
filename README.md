@@ -77,11 +77,8 @@ Example Playbook
 
 An example playbook is provided in tests/test.yml:
 
-    - hosts: all
-      gather_facts: true
-
     - hosts: undercloud
-      gather_facts: false
+      gather_facts: true
       become: yes
       become_method: sudo
       become_user: stack
@@ -97,13 +94,10 @@ scripts using this example playbook (duplicate from
 ./tests/oooq-test.yaml):
 
     ---
-    - hosts: all
-      gather_facts: true
-
     - hosts: undercloud
       vars:
         - overcloud_deploy_script: overcloud-deploy-command.sh
-      gather_facts: false
+      gather_facts: true
       become: yes
       become_method: sudo
       become_user: stack
