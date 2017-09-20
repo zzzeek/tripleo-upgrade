@@ -77,8 +77,6 @@
       script: "{{ overcloud_composable_upgrade_script }}"
       environment_file:
         - "{% if undercloud_ssl|succeeded %}{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}{% endif %}"
-        - "{{ tht_directory }}/environments/docker.yaml"
-        - "{{ tht_directory }}/environments/docker-ha.yaml"
         - "{{ tht_directory }}/environments/major-upgrade-composable-steps-docker.yaml"
         - "{% if ceph_env is defined %}{{ working_dir }}/ceph-ansible-env.yaml{% endif %}"
         - "{% if not upstream_container_images or (upstream_container_images and use_local_docker_registry) %}{{ containers_default_parameters }}{% endif %}"
@@ -86,8 +84,6 @@
       script: "{{ overcloud_converge_upgrade_script }}"
       environment_file:
         - "{% if undercloud_ssl|succeeded %}{% if uc_keystone_conn|failed %}{{ working_dir }}/undercloud_ssl_camap.yaml{% endif %}{% endif %}"
-        - "{{ tht_directory }}/environments/docker.yaml"
-        - "{{ tht_directory }}/environments/docker-ha.yaml"
         - "{{ tht_directory }}/environments/major-upgrade-converge-docker.yaml"
         - "{% if ceph_env is defined %}{{ working_dir }}/ceph-ansible-env.yaml{% endif %}"
         - "{% if not upstream_container_images or (upstream_container_images and use_local_docker_registry) %}{{ containers_default_parameters }}{% endif %}"
