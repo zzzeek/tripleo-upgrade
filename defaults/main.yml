@@ -52,3 +52,6 @@ container_images_location: "{{ working_dir }}/container_images.yaml"
 
 # reboot nodes post upgrade
 undercloud_reboot: false
+
+# time to wait for nodes to reboot in seconds
+node_reboot_timeout: 120
