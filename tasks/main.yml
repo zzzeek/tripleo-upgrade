@@ -23,10 +23,6 @@
   when: undercloud_upgrade or undercloud_update
 
 - block:
-    - name: apply pre docker composable upgrade workarounds
-      command: "{{working_dir}}/pre_docker_composable_upgrade_workarounds.sh"
-      when: upgrade_workarounds
-
     # TODO: move this out of upgrade
     - name: download container images
       include: container_images.yaml
@@ -38,6 +34,10 @@
 
 # refresh facts to avoid failing on env with large number of nodes
     - setup:
+
+    - name: apply pre docker composable upgrade workarounds
+      command: "{{working_dir}}/pre_docker_composable_upgrade_workarounds.sh"
+      when: upgrade_workarounds
 
     - include: docker_composable_upgrade.yml
       tags: docker_composable_upgrade
