@@ -20,7 +20,7 @@
     - name: apply post undercloud upgrade workarounds
       command: "{{working_dir}}/post_undercloud_upgrade_workarounds.sh"
       when: upgrade_workarounds
-  when: undercloud_upgrade or undercloud_update
+  when: undercloud_upgrade|bool or undercloud_update|bool
 
 - block:
     # TODO: move this out of upgrade
@@ -67,4 +67,4 @@
     - name: apply post docker upgrade converge workarounds
       command: "{{working_dir}}/post_docker_converge_upgrade_workarounds.sh"
       when: upgrade_workarounds
-  when: overcloud_upgrade
+  when: overcloud_upgrade|bool
