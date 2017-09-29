@@ -45,6 +45,15 @@
         - '\1\n  networks:\n    - InternalApi\n    - Storage\n    - Tenant'
         - '\1\n  description: |\n    Basic Compute Node role'
 
+    - name: Assigns new attributes to AltCompute role
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '^(- name: AltCompute.*)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n  networks:\n    - InternalApi\n    - Storage\n    - Tenant'
+        - '\1\n  description: |\n    Basic Compute Node role'
+
     - name: Assigns new attributes to BlockStorage role
       replace:
         dest: '{{ custom_roles_file.stdout }}'
@@ -113,15 +122,6 @@
         - '\1\n  networks:\n    - InternalApi'
         - '\1\n  description: |\n    Standalone messaging role with RabbitMQ being managed via Pacemaker'
 
-    - name: Clean services removed in Pike
-      lineinfile:
-        dest: '{{ custom_roles_file.stdout }}'
-        regexp: "{{ item }}"
-        state: absent
-      with_items:
-        - 'OS::TripleO::Services::CeilometerApi'
-        - 'OS::TripleO::Services::CeilometerCollector'
-
     - name: Add services common to all roles introduced in Pike
       replace:
         dest: '{{ custom_roles_file.stdout }}'
@@ -132,12 +132,17 @@
         - '\1\n    - OS::TripleO::Services::Docker'
         - '\1\n    - OS::TripleO::Services::Securetty'
         - '\1\n    - OS::TripleO::Services::Tuned'
+        - '\1\n    - OS::TripleO::Services::ContainersLogrotateCrond'
 
-    - name: Add CinderBackendVRTSHyperScale service introduced in Pike
+    - name: Add CinderBackend services introduced in Pike
       replace:
         dest: '{{ custom_roles_file.stdout }}'
         regexp: '(- .*CinderVolume)'
-        replace: '\1\n    - OS::TripleO::Services::CinderBackendVRTSHyperScale'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n    - OS::TripleO::Services::CinderBackendVRTSHyperScale'
+        - '\1\n    - OS::TripleO::Services::CinderBackendDellEMCUnity'
+        - '\1\n    - OS::TripleO::Services::CinderBackendDellEMCVMAXISCSI'
 
     - name: Add Clustercheck service introduced in Pike
       replace:
@@ -169,14 +174,12 @@
         - '\1\n    - OS::TripleO::Services::NeutronBgpVpnApi'
         - '\1\n    - OS::TripleO::Services::NeutronL2gwApi'
 
-    - name: Add Neutron API services introduced in Pike
+    - name: Add Neutron agents introduced in Pike
       replace:
         dest: '{{ custom_roles_file.stdout }}'
-        regexp: '(- OS::TripleO::Services::NeutronApi)'
+        regexp: '(- OS::TripleO::Services::NeutronL3Agent)'
         replace: "{{ item }}"
       with_items:
-        - '\1\n    - OS::TripleO::Services::NeutronBgpVpnApi'
-        - '\1\n    - OS::TripleO::Services::NeutronL2gwApi'
         - '\1\n    - OS::TripleO::Services::NeutronL2gwAgent'
         - '\1\n    - OS::TripleO::Services::NeutronLbaasv2Agent'
 
@@ -201,4 +204,15 @@
         dest: '{{ custom_roles_file.stdout }}'
         regexp: '(- OS::TripleO::Services::OVNDBs)'
         replace: '\1\n    - OS::TripleO::Services::OVNController'
+
+    - name: Add Manila backend services introduced in Pike
+      replace:
+        dest: '{{ custom_roles_file.stdout }}'
+        regexp: '(- OS::TripleO::Services::ManilaShare)'
+        replace: "{{ item }}"
+      with_items:
+        - '\1\n    - OS::TripleO::Services::ManilaBackendIsilon'
+        - '\1\n    - OS::TripleO::Services::ManilaBackendUnity'
+        - '\1\n    - OS::TripleO::Services::ManilaBackendVMAX'
+        - '\1\n    - OS::TripleO::Services::ManilaBackendVNX'
   when: custom_roles_file.stdout|length > 0 and not custom_roles_adjusted.stat.exists
