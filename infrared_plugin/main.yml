@@ -64,5 +64,10 @@
          l3_agent_connectivity_check: true
       when: install.upgrade.floatingip.check
 
+    - name: Set upgrade compute host evacuate
+      set_fact:
+         compute_evacuate: true
+      when: install.upgrade.compute.evacuate
+
   roles:
     - tripleo-upgrade

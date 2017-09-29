@@ -55,6 +55,11 @@ subparsers:
                       help: |
                           Memory assigned to the instance spawned before upgrade
                       default: 512
+                  upgrade-compute-evacuate:
+                      type: Bool
+                      help: |
+                          Migrate instances between compute nodes during upgrade.
+                      default: true
             - title: TripleO Update
               options:
                   overcloud-update:
