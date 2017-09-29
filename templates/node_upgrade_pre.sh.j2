@@ -4,7 +4,8 @@ nova host-evacuate-live {{ node_name }}
 timeout_seconds=120
 elapsed_seconds=0
 while true; do
-    INSTANCE_COUNT=$(openstack server list --host {{ node_name }} -f json | jq -r -c '[.[] | select(.Status | contains("ACTIVE") or contains("PAUSED"))] | length')
+    echo "Waiting for {{ node_name }} to get quiesced ..."
+    INSTANCE_COUNT=$(openstack server list --host {{ node_name }} -f json | jq -r -c '[.[] | select(.Status | contains("ACTIVE") or contains("PAUSED") or contains("MIGRATING"))] | length')
     if [ $INSTANCE_COUNT == 0 ]; then
         break
     fi
