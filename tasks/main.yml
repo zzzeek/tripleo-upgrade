@@ -1,12 +1,12 @@
 ---
 # tasks file for tripleo-upgrade
-- name: create upgrade scripts
-  include: create-scripts.yaml
-  tags: create_upgrade_scripts
-
 - name: launch pre upgrade workload
   command: "{{ workload_launch_script }}"
   when: workload_launch
+
+- name: create upgrade scripts
+  include: create-scripts.yaml
+  tags: create_upgrade_scripts
 
 - block:
     - name: apply pre undercloud upgrade workarounds
