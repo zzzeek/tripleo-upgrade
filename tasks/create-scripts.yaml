@@ -15,6 +15,7 @@
     dest: "{{ overcloud_deploy_script }}"
     regexp: environments/services/
     replace: environments/services-docker/
+  when: upstream_container_images|bool
 
 - name: replace storage environment with ceph ansible environment
   replace:
