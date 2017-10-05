@@ -79,7 +79,11 @@ fi
 timeout_seconds=120
 elapsed_seconds=0
 while true; do
-    echo "Migrating {{ instance }} back to {{ node_name }} ..."
+    if [ $STORAGE_BACKEND == 'ceph' ]; then
+        echo "Shared storage live migrating {{ instance }} back to {{ node_name }} ..."
+    else
+        echo "Block migrating {{ instance }} back to {{ node_name }} ..."
+    fi
     INSTANCE_HOST=$(openstack server show {{ instance }} -f json | jq -r -c '. | .["OS-EXT-SRV-ATTR:host"]')
     if [ $INSTANCE_HOST == '{{ node_name }}' ]; then
         break
