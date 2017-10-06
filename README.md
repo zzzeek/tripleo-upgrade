@@ -35,6 +35,30 @@ Role Variables
 
 Available variables are listed below:
 
+    upgrade_noop: false
+
+Only create upgrade scripts without running them
+
+    update_noop: false
+
+Only create update scripts without running them
+
+    undercloud_upgrade: false
+
+Run undercloud upgrade
+
+    overcloud_upgrade: false
+
+Run overcloud upgrade
+
+    undercloud_update: false
+
+Run undercloud update
+
+    overcloud_update: false
+
+Run overcloud update
+
     overcloud_deploy_script: "~/overcloud_deploy.sh"
 
 Location of the initial overcloud deploy script.
